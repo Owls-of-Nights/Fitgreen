@@ -3,9 +3,8 @@ const nextConfig = {
     reactStrictMode: true,
     swcMinify: true,
     images: {
-        domains: ['localhost', 'your-vercel-domain.vercel.app'],
+        domains: ['fit-green.vercel.app'],
     },
-    // Add output: 'standalone' for better Vercel deployment
     output: 'standalone'
 }
 

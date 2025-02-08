@@ -10,5 +10,12 @@
         "MAILJET_API_KEY": "@mailjet-api-key",
         "MAILJET_SECRET_KEY": "@mailjet-secret-key",
         "MAILJET_SENDER_EMAIL": "@mailjet-sender-email"
-    }
+    },
+    "headers": [{
+        "source": "/(.*)",
+        "headers": [{
+            "key": "Access-Control-Allow-Origin",
+            "value": "https://fit-green.vercel.app"
+        }]
+    }]
 }

@@ -12,14 +12,9 @@ export async function POST(request: Request) {
     }
 
     const db = await getDb()
-    console.log("Checking for existing user:", email)
-
-    // Check if user exists with case-insensitive email
-    const existingUser = await db.collection("users").findOne({ 
-      email: { $regex: new RegExp(`^${email}$`, 'i') }
-    })
-
-    console.log("Existing user check result:", existingUser)
+    const normalizedEmail = email.toLowerCase()
+    // Check if user exists using normalized email
+    const existingUser = await db.collection("users").findOne({ email: normalizedEmail })
 
     if (existingUser) {
       return new NextResponse(
@@ -30,9 +25,12 @@ export async function POST(request: Request) {
 
     const hashedPassword = await hash(password, 10)
     
+    const username = normalizedEmail.split('@')[0]  // Added default username
+
     const newUser = {
       name,
-      email: email.toLowerCase(), // Store email in lowercase
+      email: normalizedEmail, // Store email in lowercase
+      username, // include username here as well
       password: hashedPassword,
       points: POINTS.SIGNUP,
       profilePicture: "",

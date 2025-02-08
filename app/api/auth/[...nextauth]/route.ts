@@ -3,6 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials"
 import { compare } from "bcryptjs"
 import { getDb } from "@/lib/mongodb"
 import { POINTS } from "@/lib/points"
+import { User } from "@/types/user"
 
 const handler = NextAuth({
   providers: [
@@ -18,7 +19,7 @@ const handler = NextAuth({
         }
 
         const db = await getDb()
-        const user = await db.collection("users").findOne({ 
+        const user = await db.collection<User>("users").findOne({ 
           email: credentials.email 
         })
 
@@ -73,7 +74,7 @@ const handler = NextAuth({
       today.setHours(0, 0, 0, 0)
 
       // Check last login and award daily points if needed
-      const userRecord = await db.collection("users").findOne({ email: user.email })
+      const userRecord = await db.collection<User>("users").findOne({ email: user.email })
       if (userRecord && (!userRecord.lastLoginPoint || new Date(userRecord.lastLoginPoint) < today)) {
         await db.collection("users").updateOne(
           { email: user.email },

@@ -18,9 +18,10 @@ export async function POST(request: Request) {
 
     const db = await getDb()
 
-    // Check if user exists with case-insensitive email
+    const normalizedEmail = email.toLowerCase()
+    // Check if user exists using normalized email
     const existingUser = await db.collection("users").findOne({ 
-      email: { $regex: new RegExp(`^${email}$`, 'i') }
+      email: normalizedEmail
     })
 
     if (existingUser) {
@@ -33,9 +34,12 @@ export async function POST(request: Request) {
     const hashedPassword = await hash(password, 10)
     const verificationToken = generateVerificationToken()
     
+    const username = normalizedEmail.split('@')[0] // Added default username
+
     const newUser = {
       name,
-      email: email.toLowerCase(),
+      email: normalizedEmail,
+      username, // include username in the new user record
       password: hashedPassword,
       points: POINTS.SIGNUP,
       profilePicture: "",

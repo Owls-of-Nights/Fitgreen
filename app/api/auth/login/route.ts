@@ -1,23 +1,28 @@
 import { NextResponse } from "next/server"
-import clientPromise from "@/lib/mongodb"
-import { verifyPassword, excludePassword } from "@/lib/auth"
+import { getDb } from "@/lib/mongodb"
+import { compare } from "bcryptjs"
+import { User } from "@/types/user"
 import { sendEmail } from "@/lib/mailjet"
 
 export async function POST(request: Request) {
   try {
     const { email, password } = await request.json()
 
-    const client = await clientPromise
-    const db = client.db()
+    if (!email || !password) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+    }
 
-    const user = await db.collection("users").findOne({ email })
+    const db = await getDb()
+    const user = await db.collection<User>("users").findOne({ email })
+
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 })
     }
 
-    const isValid = await verifyPassword(password, user.password)
-    if (!isValid) {
-      return NextResponse.json({ error: "Invalid password" }, { status: 400 })
+    const isPasswordValid = await compare(password, user.password)
+
+    if (!isPasswordValid) {
+      return NextResponse.json({ error: "Invalid password" }, { status: 401 })
     }
 
     const safeUser = excludePassword(user)
@@ -25,18 +30,24 @@ export async function POST(request: Request) {
     // Send login success email
     await sendEmail(
       email,
-      "Successful Login to FitGreen",
-      "You have successfully logged in to your FitGreen account.",
-      `<h1>Successful Login</h1>
+      "Login Successful",
+      `You have successfully logged in to FitGreen.`,
+      `
+      <h1>Login Successful</h1>
       <p>Dear ${user.name},</p>
-      <p>You have successfully logged in to your FitGreen account.</p>
-      <p>If this wasn't you, please contact our support team immediately.</p>`,
+      <p>You have successfully logged in to FitGreen.</p>
+      `
     )
 
-    return NextResponse.json({ user: safeUser })
+    return NextResponse.json({ success: true, user: safeUser })
   } catch (error) {
     console.error("Login error:", error)
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })
   }
+}
+
+function excludePassword(user: User) {
+  const { password, ...safeUser } = user
+  return safeUser
 }
 

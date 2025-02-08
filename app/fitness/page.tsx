@@ -9,6 +9,8 @@ import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
 import { toast } from "@/components/ui/use-toast"
 import { FitnessDisplay } from "@/components/fitness-display"
+import Link from "next/link"
+import { ArrowRight } from "react-feather"
 
 interface UserMetrics {
   weight: number;
@@ -17,6 +19,13 @@ interface UserMetrics {
   targetWaterIntake: number;
   age: number;
   gender: string;
+}
+
+interface Field {
+  name: string;
+  label: string;
+  type: string;
+  options?: { value: string; label: string }[];
 }
 
 export default function FitnessDashboard() {
@@ -29,6 +38,11 @@ export default function FitnessDashboard() {
     gender: ''
   })
   const [showCalculator, setShowCalculator] = useState(true)
+  const [username, setUsername] = useState<string | null>(null)
+  const [weight, setWeight] = useState("")
+  const [height, setHeight] = useState("")
+  const [age, setAge] = useState("")
+  const [gender, setGender] = useState("")
 
   useEffect(() => {
     fetchUserMetrics()
@@ -47,6 +61,7 @@ export default function FitnessDashboard() {
       if (response.ok) {
         const data = await response.json()
         setMetrics(data)
+        setUsername(data.username) // Assuming username is returned in the response
       }
     } catch (error) {
       console.error('Error fetching metrics:', error)
@@ -78,7 +93,7 @@ export default function FitnessDashboard() {
         const error = await response.json()
         throw new Error(error.error || 'Failed to update metrics')
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating metrics:', error)
       toast({
         title: "Error",
@@ -133,6 +148,24 @@ export default function FitnessDashboard() {
         height: values.height
       })
     }
+  }
+
+  async function handleCalculate() {
+    const bodyMetrics = {
+      weight: Number(weight),
+      height: Number(height),
+      age: Number(age),
+      gender
+    }
+    console.log("Sending body metrics:", bodyMetrics)
+    const response = await fetch("/api/fitness/body", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(bodyMetrics)
+    })
+    const data = await response.json()
+    console.log("Body metrics response:", data)
+    // ...update UI as needed...
   }
 
   return (
@@ -216,6 +249,43 @@ export default function FitnessDashboard() {
               </p>
             </CardContent>
           </Card>
+        </div>
+        {username && (
+          <div className="mt-8">
+            <Link 
+              href={`/user/${username}`}
+              className="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+            >
+              <span>View Profile</span>
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </div>
+        )}
+        <div>
+          <input 
+            type="number" 
+            value={weight} 
+            onChange={e => setWeight(e.target.value)} 
+            placeholder="Weight (kg)" 
+          />
+          <input 
+            type="number" 
+            value={height} 
+            onChange={e => setHeight(e.target.value)} 
+            placeholder="Height (cm)" 
+          />
+          <input 
+            type="number" 
+            value={age} 
+            onChange={e => setAge(e.target.value)} 
+            placeholder="Age" 
+          />
+          <select value={gender} onChange={e => setGender(e.target.value)}>
+            <option value="">Select Gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+          <button onClick={handleCalculate}>CALCULATE</button>
         </div>
       </motion.div>
     </Layout>

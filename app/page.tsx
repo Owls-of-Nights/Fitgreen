@@ -6,6 +6,7 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import DeveloperCard from "./components/developer-card"
 import ChatBotIframe from "./components/ChatBotIframe"
+import Globe from "./components/globe"
 
 export default function Home() {
   const { scrollY } = useScroll()
@@ -102,6 +103,13 @@ export default function Home() {
               twitter="https://x.com/Nooneknows135"
             />
           </div>
+        </div>
+      </section>
+
+      <section className="py-20 bg-white dark:bg-gray-900">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-12">Welcome to FitGreen</h2>
+          <Globe />
         </div>
       </section>
     </Layout>

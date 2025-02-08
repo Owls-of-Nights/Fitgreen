@@ -11,19 +11,16 @@ export async function GET() {
     }
 
     const db = await getDb()
-    const metrics = await db.collection("fitness_metrics").findOne({
-      userEmail: session.user.email
-    })
+    const user = await db.collection("users").findOne({ email: session.user.email })
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 })
+    }
+    const metrics = await db.collection("fitness_metrics").findOne({ userEmail: session.user.email })
 
-    return NextResponse.json(metrics || {
-      weight: 0,
-      height: 0,
-      age: 0,
-      gender: '',
-      waterIntake: 0,
-      targetWaterIntake: 2000,
-      sleepHours: 0,
-      targetSleepHours: 8,
+    return NextResponse.json({
+      ...metrics,
+      // Now safe to access user.username since user is non-null.
+      username: user.username || user.email.split('@')[0]
     })
   } catch (error) {
     console.error('GET metrics error:', error)
@@ -39,13 +36,29 @@ export async function PUT(request: Request) {
     }
 
     const body = await request.json()
-    console.log('Received metrics update:', body)
-
+    console.log("Received metrics update:", body)
     const { weight, height, age, gender, waterIntake } = body
 
     const db = await getDb()
-    
-    // Get existing metrics
+
+    // Update metrics including age, weight, height and waterIntake
+    await db.collection("fitness_metrics").updateOne(
+      { userEmail: session.user.email },
+      {
+        $set: {
+          userEmail: session.user.email,
+          ...(weight !== undefined && { weight }),
+          ...(height !== undefined && { height }),
+          ...(age !== undefined && { age }),
+          ...(gender !== undefined && { gender }),
+          ...(waterIntake !== undefined && { waterIntake }),
+          updatedAt: new Date()
+        }
+      },
+      { upsert: true }
+    )
+
+    // Update points and last active as necessary
     const existingMetrics = await db.collection("fitness_metrics").findOne({
       userEmail: session.user.email
     })
@@ -73,30 +86,13 @@ export async function PUT(request: Request) {
       }
     }
 
-    // Update metrics
-    await db.collection("fitness_metrics").updateOne(
-      { userEmail: session.user.email },
-      {
-        $set: {
-          userEmail: session.user.email,
-          ...(weight !== undefined && { weight }),
-          ...(height !== undefined && { height }),
-          ...(age !== undefined && { age }),
-          ...(gender !== undefined && { gender }),
-          ...(waterIntake !== undefined && { waterIntake }),
-          updatedAt: new Date()
-        }
-      },
-      { upsert: true }
-    )
-
     // Update user points
     if (pointsToAdd > 0) {
       await db.collection("users").updateOne(
         { email: session.user.email },
-        { 
+        {
           $inc: { points: pointsToAdd },
-          $set: { 
+          $set: {
             lastActive: new Date(),
             ...(pointsToAdd === POINTS.WATER_GOAL_COMPLETION && {
               lastWaterPoints: new Date()
@@ -111,7 +107,7 @@ export async function PUT(request: Request) {
       userEmail: session.user.email
     })
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
       pointsEarned: pointsToAdd,
       metrics: updatedMetrics

@@ -6,15 +6,25 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
+// Update the field type to include optional "options"
+interface Field {
+  name: string
+  label: string
+  type: string
+  options?: { value: string; label: string }[]
+}
+
+// Update CalculatorProps to include onSubmit property
 interface CalculatorProps {
   title: string
-  fields: { name: string; label: string; type: string }[]
+  fields: Field[]
+  onSubmit: (values: Record<string, any>) => void  // <-- Added onSubmit property
   calculate: (values: Record<string, number>) => number
   resultLabel: string
   resultUnit: string
 }
 
-export default function Calculator({ title, fields, calculate, resultLabel, resultUnit }: CalculatorProps) {
+export default function Calculator({ title, fields, onSubmit, calculate, resultLabel, resultUnit }: CalculatorProps) {
   const [values, setValues] = useState<Record<string, number>>({})
   const [result, setResult] = useState<number | null>(null)
 
@@ -25,6 +35,7 @@ export default function Calculator({ title, fields, calculate, resultLabel, resu
   const handleCalculate = () => {
     const calculatedResult = calculate(values)
     setResult(calculatedResult)
+    onSubmit(values)
   }
 
   return (

@@ -21,11 +21,12 @@ interface UserMetrics {
   gender: string;
 }
 
-interface Field {
-  name: string;
-  label: string;
-  type: string;
-  options?: { value: string; label: string }[];
+// Add (or update) the type definition for form fields to allow options for select inputs
+interface FormField {
+  name: string
+  label: string
+  type: string
+  options?: { value: string; label: string }[]
 }
 
 export default function FitnessDashboard() {
@@ -130,14 +131,13 @@ export default function FitnessDashboard() {
     return values.weight / (heightInMeters * heightInMeters)
   }
 
-  const calculateCalories = (values: Record<string, number | string>) => {
-    // Updated BMR calculation (Harris-Benedict equation)
-    const bmr = 10 * Number(values.weight) + 
-                6.25 * Number(values.height) - 
-                5 * Number(values.age) + 
-                (values.gender === 'male' ? 5 : -161)
-    
-    // Return base BMR without activity multiplier
+  // Change calculateCalories function parameter type to UserMetrics
+  const calculateCalories = (values: UserMetrics) => {
+    const bmr =
+      10 * Number(values.weight) +
+      6.25 * Number(values.height) -
+      5 * Number(values.age) +
+      (values.gender === 'male' ? 5 : -161)
     return Math.round(bmr)
   }
 
@@ -165,7 +165,7 @@ export default function FitnessDashboard() {
     })
     const data = await response.json()
     console.log("Body metrics response:", data)
-    // ...update UI as needed...
+
   }
 
   return (
@@ -188,7 +188,7 @@ export default function FitnessDashboard() {
                 { 
                   name: "gender", 
                   label: "Gender", 
-                  type: "select",
+                  type: "select",   
                   options: [
                     { value: "male", label: "Male" },
                     { value: "female", label: "Female" }
@@ -261,32 +261,6 @@ export default function FitnessDashboard() {
             </Link>
           </div>
         )}
-        <div>
-          <input 
-            type="number" 
-            value={weight} 
-            onChange={e => setWeight(e.target.value)} 
-            placeholder="Weight (kg)" 
-          />
-          <input 
-            type="number" 
-            value={height} 
-            onChange={e => setHeight(e.target.value)} 
-            placeholder="Height (cm)" 
-          />
-          <input 
-            type="number" 
-            value={age} 
-            onChange={e => setAge(e.target.value)} 
-            placeholder="Age" 
-          />
-          <select value={gender} onChange={e => setGender(e.target.value)}>
-            <option value="">Select Gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-          </select>
-          <button onClick={handleCalculate}>CALCULATE</button>
-        </div>
       </motion.div>
     </Layout>
   )

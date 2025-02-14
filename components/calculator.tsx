@@ -1,3 +1,13 @@
+"use client"
+import React, { useState } from "react"
+import { motion } from "framer-motion"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+// Added import for Select components
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
+
 interface CalculatorField {
   name: string;
   label: string;
@@ -14,8 +24,6 @@ interface CalculatorProps {
   resultUnit: string;
   onSubmit?: (values: Record<string, number | string>) => void;
 }
-
-// ...existing imports...
 
 export default function Calculator({ 
   title, 
@@ -59,9 +67,7 @@ export default function Calculator({
             <div key={field.name}>
               <Label htmlFor={field.name}>{field.label}</Label>
               {field.type === 'select' ? (
-                <Select 
-                  onValueChange={(value) => setValues(prev => ({ ...prev, [field.name]: value }))}
-                >
+                <Select  onValueChange={(value) => setValues(prev => ({ ...prev, [field.name]: value }))} >
                   <SelectTrigger>
                     <SelectValue placeholder="Select..." />
                   </SelectTrigger>
@@ -70,7 +76,7 @@ export default function Calculator({
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
                       </SelectItem>
-                    ))}
+                    ))} 
                   </SelectContent>
                 </Select>
               ) : (
@@ -80,7 +86,7 @@ export default function Calculator({
                   onChange={(e) => setValues(prev => ({ 
                     ...prev, 
                     [field.name]: field.type === 'number' ? Number(e.target.value) : e.target.value 
-                  }))}
+                  }))} 
                 />
               )}
             </div>

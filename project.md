@@ -20,6 +20,15 @@ FitGreen is a full-stack platform that enables users to:
 - **Email Service:** Integrated Mailjet to handle account verification and user notification emails.
 - **Rewards System:** Designed a custom points-based system to encourage consistent fitness tracking and healthy habits.
 
+## Points System
+
+The application awards points for user activities as follows:
+
+- **SIGNUP:** Awarded when a user registers – **50 points**
+- **DAILY_LOGIN:** Awarded once per day upon login – **10 points**
+- **FITNESS_DATA_ENTRY:** Awarded when submitting initial health/fitness metrics – **20 points**
+- **WATER_GOAL_COMPLETION:** Awarded once per day if water intake reaches or exceeds 2000ml – **15 points**
+
 ## Challenges we ran into
 
 - Ensuring secure storage and handling of sensitive user credentials.

@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic"; // Added to avoid static rendering issues
+
 import { getDb } from "@/lib/mongodb"
 import { getServerSession } from "next-auth"
 import { NextResponse } from "next/server"

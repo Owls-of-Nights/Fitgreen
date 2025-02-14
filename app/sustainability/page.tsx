@@ -31,6 +31,7 @@ export default function SustainabilityDashboard() {
                 { name: "car", label: "Monthly Car Mileage", type: "number" },
                 { name: "flights", label: "Flights per Year", type: "number" },
               ]}
+              onSubmit={() => {}}  // Added noop onSubmit handler
               calculate={calculateCarbonFootprint}
               resultLabel="Your Annual Carbon Footprint"
               resultUnit="kg CO2"

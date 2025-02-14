@@ -5,7 +5,16 @@ import { getDb } from "@/lib/mongodb"
 import { POINTS } from "@/lib/points"
 import { User } from "@/types/user"
 
+// A helper to add a timeout to async operations
+async function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  const timeout = new Promise<never>((_, reject) =>
+    setTimeout(() => reject(new Error("Operation timed out")), ms)
+  )
+  return Promise.race([promise, timeout])
+}
+
 const handler = NextAuth({
+  debug: true, // Enable debug logs to help troubleshooting
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -18,7 +27,8 @@ const handler = NextAuth({
           throw new Error("Email and password required")
         }
 
-        const db = await getDb()
+        // Wrap the DB call with a timeout (e.g. 5000ms)
+        const db = await withTimeout(getDb(), 5000)
         const user = await db.collection<User>("users").findOne({
           email: credentials.email
         })
@@ -73,12 +83,10 @@ const handler = NextAuth({
       const today = new Date()
       today.setHours(0, 0, 0, 0)
 
-      // Ensure user.email is defined before querying
       if (!user.email) {
         throw new Error("User email is required")
       }
 
-      // Check last login and award daily points if needed
       const userRecord = await db.collection<User>("users").findOne({ email: user.email! })
       if (userRecord && (!userRecord.lastLoginPoint || new Date(userRecord.lastLoginPoint) < today)) {
         await db.collection("users").updateOne(

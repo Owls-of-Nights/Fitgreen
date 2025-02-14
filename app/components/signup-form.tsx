@@ -18,7 +18,11 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>
 
-export default function SignupForm() {
+interface SignupFormProps {
+  onSignup: (name: string, email: string, password: string) => Promise<void>
+}
+
+export default function SignupForm({ onSignup }: SignupFormProps) {
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
   const {
@@ -31,18 +35,8 @@ export default function SignupForm() {
 
   const onSubmit = async (data: FormData) => {
     try {
-      const response = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      })
-
-      if (response.ok) {
-        router.push("/login?signup=success")
-      } else {
-        const errorData = await response.json()
-        setError(errorData.error || "An error occurred during signup")
-      }
+      await onSignup(data.name, data.email, data.password)
+      router.push("/login?signup=success")
     } catch (error) {
       setError("An unexpected error occurred")
     }

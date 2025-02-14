@@ -19,8 +19,8 @@ const handler = NextAuth({
         }
 
         const db = await getDb()
-        const user = await db.collection<User>("users").findOne({ 
-          email: credentials.email 
+        const user = await db.collection<User>("users").findOne({
+          email: credentials.email
         })
 
         if (!user) {
@@ -73,14 +73,19 @@ const handler = NextAuth({
       const today = new Date()
       today.setHours(0, 0, 0, 0)
 
+      // Ensure user.email is defined before querying
+      if (!user.email) {
+        throw new Error("User email is required")
+      }
+
       // Check last login and award daily points if needed
-      const userRecord = await db.collection<User>("users").findOne({ email: user.email })
+      const userRecord = await db.collection<User>("users").findOne({ email: user.email! })
       if (userRecord && (!userRecord.lastLoginPoint || new Date(userRecord.lastLoginPoint) < today)) {
         await db.collection("users").updateOne(
-          { email: user.email },
-          { 
+          { email: user.email! },
+          {
             $inc: { points: POINTS.DAILY_LOGIN },
-            $set: { 
+            $set: {
               lastLoginPoint: new Date(),
               lastActive: new Date()
             }

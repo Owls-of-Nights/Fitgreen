@@ -95,12 +95,36 @@ export default function Home() {
               twitter="https://twitter.com/naranbhusal02"
             />
             <DeveloperCard
+              name="Dilip Acharya"
+              role="Backend Developer"
+              image="https://iili.io/2pJdBlj.png"
+              github="https://github.com/JCT-B"
+              linkedin="https://www.linkedin.com/in/dilip--acharya/"
+              twitter=""
+            />
+            <DeveloperCard
               name="Nayan Acharya"
               role="Backend Developer"
               image="https://iili.io/2Z7vNls.jpg"
               github="https://github.com/nayan135"
               linkedin="https://linkedin.com/in/nayan135"
               twitter="https://x.com/Nooneknows135"
+            />
+            <DeveloperCard
+             name="Shasank Shrestha"
+             role="Frontend Developer"
+             image="https://iili.io/2pJT8iv.png"
+             github="https://github.com/shasank00"
+             linkedin="https://www.linkedin.com/in/shasank01/"
+             twitter="https://x.com/ShasankShresth5"
+            />
+            <DeveloperCard
+              name="Sanjog Pandey"
+              role="DESIGNER"
+              image="https://iili.io/2pJdWsn.png"
+              github=""
+              linkedin="https://www.linkedin.com/in/sanjog-pandey-4317ba31a/"
+              twitter=""
             />
           </div>
         </div>

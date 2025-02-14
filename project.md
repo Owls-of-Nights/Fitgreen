@@ -51,8 +51,8 @@ FitGreen is a full-stack platform that enables users to:
 
 ## Contributors
 
-- [Narayan Bhusal](https://github.com/narayanbhusal) – Lead Developer
-- [Nayan Acharya](https://github.com/nayanacharya) – Lead Developer
-- [DILIP ACHARYA](https://github.com/dilip) – Backend Developer
-- [SHASANK SHRESTHA](https://github.com/shasank) – Backend Developer
+- [Narayan Bhusal](https://github.com/naranbhusal02) – Lead Developer
+- [Nayan Acharya](https://github.com/nayan135) – Lead Developer
+- [DILIP ACHARYA](https://github.com/JCT-B) – Backend Developer
+- [SHASANK SHRESTHA](https://github.com/shasank00) – Backend Developer
 - [SANJOG PANDEY](https://github.com/sanjog) – Frontend Developer
